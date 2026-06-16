@@ -289,6 +289,7 @@
             class="email-input"
             type="email"
             id="email-input"
+            name="EMAIL"
             placeholder="your@email.com"
             aria-label="Your email address"
           />
@@ -314,12 +315,44 @@
         return;
       }
       input.style.borderColor = '';
+
+      // Submit to Mailchimp via hidden iframe to avoid page redirect
+      const MAILCHIMP_URL = 'https://iriebrewkombucha.us7.list-manage.com/subscribe/post?u=d7e8f8464b6362d8a4385b4a0&id=ef13662c49&f_id=0098d1e4f0';
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = MAILCHIMP_URL;
+      form.target = 'mc-hidden-frame';
+      form.style.display = 'none';
+
+      const emailField = document.createElement('input');
+      emailField.type = 'email';
+      emailField.name = 'EMAIL';
+      emailField.value = val;
+      form.appendChild(emailField);
+
+      // Honeypot field required by Mailchimp
+      const honeypot = document.createElement('input');
+      honeypot.type = 'text';
+      honeypot.name = 'b_d7e8f8464b6362d8a4385b4a0_ef13662c49';
+      honeypot.value = '';
+      honeypot.tabIndex = '-1';
+      form.appendChild(honeypot);
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      // Show success message
       document.getElementById('email-note').style.display = 'none';
       document.getElementById('email-input').style.display = 'none';
       document.getElementById('email-btn').style.display = 'none';
       document.getElementById('success-msg').style.display = 'block';
     });
   </script>
+
+  <!-- Hidden iframe to absorb Mailchimp redirect -->
+  <iframe name="mc-hidden-frame" style="display:none;" title="mc-frame"></iframe>
 
 </body>
 </html>
